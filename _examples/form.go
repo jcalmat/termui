@@ -20,92 +20,68 @@ func main() {
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)
 	}
-	// defer ui.Close()
 
-	cava := widgets.NewCheckbox("Ça va ?", false)
-	bien := widgets.NewCheckbox("Bien ?", false)
-	bienbien := widgets.NewCheckbox("Bien bien ?", false)
+	checkbox0 := widgets.NewCheckbox("checkbox.0", false)
+	checkbox01 := widgets.NewCheckbox("checkbox.0.1", false)
+	checkbox02 := widgets.NewCheckbox("checkbox.0.2", false)
+	textfield1 := widgets.NewTextField("textfield.1:")
+	checkbox11 := widgets.NewCheckbox("checkbox.1.1", false)
 	nodes := []*widgets.FormNode{
 		{
-			Item: cava,
+			Item: checkbox0,
 			Nodes: []*widgets.FormNode{
 				{
-					Item: bien,
+					Item: checkbox01,
 					Nodes: []*widgets.FormNode{
 						{
-							Item: bienbien,
+							Item: checkbox02,
 						},
 					},
+				},
+			},
+		},
+		{
+			Item: textfield1,
+			Nodes: []*widgets.FormNode{
+				{
+					Item: checkbox11,
 				},
 			},
 		},
 	}
 
 	l := widgets.NewForm()
-	l.Title = "test"
+	l.Title = "My form"
 	l.SetNodes(nodes)
 
 	x, y := ui.TerminalDimensions()
 	l.SetRect(0, 0, x, y)
 
-	// l.TextStyle = ui.NewStyle(ui.ColorYellow)
-	// ui.NewStyle(ui.ColorWhite, ui.ColorBlack, ui.ModifierBold)
-	l.SelectedTextStyle = ui.NewStyle(ui.ColorBlack, ui.ColorWhite)
-	// l.WrapText = false
-	// l.SetNodes(nodes)
-
-	// x, y := ui.TerminalDimensions()
-
-	// l.SetRect(0, 0, x, y)
+	l.SelectedTextStyle = ui.NewStyle(ui.ColorClear)
 
 	ui.Render(l)
 
-	// previousKey := ""
 	var close bool
 	uiEvents := ui.PollEvents()
 	for {
 		e := <-uiEvents
 		switch e.ID {
-		case "q", "<C-c>":
+		case "<C-c>":
 			ui.Close()
 			close = true
 			break
-		case "j", "<Down>":
+		case "<Down>":
 			l.ScrollDown()
-		case "k", "<Up>":
+		case "<Up>":
 			l.ScrollUp()
-		// case "<C-d>":
-		// 	l.ScrollHalfPageDown()
-		// case "<C-u>":
-		// 	l.ScrollHalfPageUp()
-		// case "<C-f>":
-		// 	l.ScrollPageDown()
-		// case "<C-b>":
-		// 	l.ScrollPageUp()
-		// // case "g":
-		// // 	if previousKey == "g" {
-		// // 		l.ScrollTop()
-		// // 	}
-		// case "<Home>":
-		// 	l.ScrollTop()
 		case "<Enter>":
 			l.ToggleExpand()
-			// case "G", "<End>":
-			// 	l.ScrollBottom()
-			// case "E":
-		// 	l.ExpandAll()
-		// case "C":
-		// 	l.CollapseAll()
 		case "<Resize>":
 			x, y := ui.TerminalDimensions()
 			l.SetRect(0, 0, x, y)
 		}
 
-		// if previousKey == "g" {
-		// 	previousKey = ""
-		// } else {
-		// 	previousKey = e.ID
-		// }
+		l.HandleKeyboard(e)
 
 		if close {
 			break
@@ -113,6 +89,6 @@ func main() {
 		ui.Render(l)
 	}
 
-	fmt.Printf("cava = %v | bien = %v | bienbien = %v\n", cava.Answer(), bien.Answer(), bienbien.Answer())
+	fmt.Printf("checkbox0 = %v | checkbox01 = %v | checkbox02 = %v | checkbox11 = %v\ntextfield = %s\n", checkbox0.Answer(), checkbox01.Answer(), checkbox02.Answer(), checkbox11.Answer(), textfield1.Answer())
 
 }

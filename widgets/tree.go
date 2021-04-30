@@ -48,7 +48,7 @@ type Tree struct {
 	TextStyle        Style
 	SelectedRowStyle Style
 	WrapText         bool
-	SelectedRow      int
+	selectedRow      int
 
 	nodes []*TreeNode
 	// rows is flatten nodes for rendering.
@@ -116,10 +116,10 @@ func (self *Tree) Draw(buf *Buffer) {
 	point := self.Inner.Min
 
 	// adjusts view into widget
-	if self.SelectedRow >= self.Inner.Dy()+self.topRow {
-		self.topRow = self.SelectedRow - self.Inner.Dy() + 1
-	} else if self.SelectedRow < self.topRow {
-		self.topRow = self.SelectedRow
+	if self.selectedRow >= self.Inner.Dy()+self.topRow {
+		self.topRow = self.selectedRow - self.Inner.Dy() + 1
+	} else if self.selectedRow < self.topRow {
+		self.topRow = self.selectedRow
 	}
 
 	// draw rows
@@ -130,7 +130,7 @@ func (self *Tree) Draw(buf *Buffer) {
 		}
 		for j := 0; j < len(cells) && point.Y < self.Inner.Max.Y; j++ {
 			style := cells[j].Style
-			if row == self.SelectedRow {
+			if row == self.selectedRow {
 				style = self.SelectedRowStyle
 			}
 			if point.X+1 == self.Inner.Max.X+1 && len(cells) > self.Inner.Dx() {
@@ -164,12 +164,12 @@ func (self *Tree) Draw(buf *Buffer) {
 // There is no need to set self.topRow, as this will be set automatically when drawn,
 // since if the selected item is off screen then the topRow variable will change accordingly.
 func (self *Tree) ScrollAmount(amount int) {
-	if len(self.rows)-int(self.SelectedRow) <= amount {
-		self.SelectedRow = len(self.rows) - 1
-	} else if int(self.SelectedRow)+amount < 0 {
-		self.SelectedRow = 0
+	if len(self.rows)-int(self.selectedRow) <= amount {
+		self.selectedRow = len(self.rows) - 1
+	} else if int(self.selectedRow)+amount < 0 {
+		self.selectedRow = 0
 	} else {
-		self.SelectedRow += amount
+		self.selectedRow += amount
 	}
 }
 
@@ -177,7 +177,7 @@ func (self *Tree) SelectedNode() *TreeNode {
 	if len(self.rows) == 0 {
 		return nil
 	}
-	return self.rows[self.SelectedRow]
+	return self.rows[self.selectedRow]
 }
 
 func (self *Tree) ScrollUp() {
@@ -190,8 +190,8 @@ func (self *Tree) ScrollDown() {
 
 func (self *Tree) ScrollPageUp() {
 	// If an item is selected below top row, then go to the top row.
-	if self.SelectedRow > self.topRow {
-		self.SelectedRow = self.topRow
+	if self.selectedRow > self.topRow {
+		self.selectedRow = self.topRow
 	} else {
 		self.ScrollAmount(-self.Inner.Dy())
 	}
@@ -210,28 +210,28 @@ func (self *Tree) ScrollHalfPageDown() {
 }
 
 func (self *Tree) ScrollTop() {
-	self.SelectedRow = 0
+	self.selectedRow = 0
 }
 
 func (self *Tree) ScrollBottom() {
-	self.SelectedRow = len(self.rows) - 1
+	self.selectedRow = len(self.rows) - 1
 }
 
 func (self *Tree) Collapse() {
-	self.rows[self.SelectedRow].Expanded = false
+	self.rows[self.selectedRow].Expanded = false
 	self.prepareNodes()
 }
 
 func (self *Tree) Expand() {
-	node := self.rows[self.SelectedRow]
+	node := self.rows[self.selectedRow]
 	if len(node.Nodes) > 0 {
-		self.rows[self.SelectedRow].Expanded = true
+		self.rows[self.selectedRow].Expanded = true
 	}
 	self.prepareNodes()
 }
 
 func (self *Tree) ToggleExpand() {
-	node := self.rows[self.SelectedRow]
+	node := self.rows[self.selectedRow]
 	if len(node.Nodes) > 0 {
 		node.Expanded = !node.Expanded
 	}

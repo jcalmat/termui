@@ -2,8 +2,6 @@ package widgets
 
 import (
 	"strings"
-
-	ui "github.com/gizak/termui/v3"
 )
 
 const (
@@ -43,9 +41,9 @@ func (c *checkbox) string() string {
 	return sb.String()
 }
 
-func (c *checkbox) handleInput(e ui.Event) {
-	if e.ID == "<Enter>" {
-		c.toggle()
+func (c *checkbox) handleInput(e formEvent) {
+	if e == enter {
+		c.checked = !c.checked
 	}
 }
 
@@ -53,58 +51,8 @@ func (c *checkbox) setVisible(visible bool) {
 	c.visible = visible
 }
 
-func (c *checkbox) toggle() {
-	c.checked = !c.checked
-}
-
 func (c *checkbox) selectable() bool { return true }
 
 func (c *checkbox) Answer() bool {
 	return c.checked && c.visible
 }
-
-// func (c *checkbox) setPrefix(prefix string) {
-// 	c.prefix = prefix
-// }
-
-// func (c *checkbox) clearValue() {
-// 	c.checked = false
-// }
-
-// func (c *checkbox) setCursorPosition() {}
-
-// func (c *checkbox) ToFormItem() *FormItem {
-// 	return &FormItem{item: c}
-// }
-
-// func (c *checkbox) write() {
-// 	// var question string
-
-// 	checkbox := checkbox_uncheck
-// 	if c.checked {
-// 		checkbox = "\u001b[32;1m" + checkbox_check
-// 	}
-// 	if c.selected {
-// 		checkbox = "\u001b[7m" + checkbox
-// 	}
-
-// 	// question = fmt.Sprintf("%s%s %s\u001b[0m", c.prefix, checkbox, c.question)
-
-// 	// clearLine()
-// 	// write(question)
-// 	// cursor.MoveColumn(1)
-// }
-
-// func (c *checkbox) pick() {
-// 	c.selected = true
-// 	// cursor.HideCursor()
-// }
-
-// func (c *checkbox) unpick() {
-// 	c.selected = false
-// 	// cursor.DisplayCursor()
-// }
-
-// func (c *checkbox) displayChildren() bool {
-// 	return c.checked
-// }

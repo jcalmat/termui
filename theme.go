@@ -75,7 +75,9 @@ type TreeTheme struct {
 }
 
 type FormTheme struct {
-	Text Style
+	Text      Style
+	Collapsed rune
+	Expanded  rune
 }
 
 type ParagraphTheme struct {
@@ -141,7 +143,9 @@ var Theme = RootTheme{
 	},
 
 	Form: FormTheme{
-		Text: NewStyle(ColorWhite),
+		Text:      NewStyle(ColorWhite),
+		Collapsed: COLLAPSED,
+		Expanded:  EXPANDED,
 	},
 
 	StackedBarChart: StackedBarChartTheme{

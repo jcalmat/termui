@@ -11,12 +11,31 @@ import (
 
 const formIndent = "  "
 
-type FormItem interface {
-	// toggle indicates to the item that it has been toggled
-	toggle()
+type formEvent string
 
-	// handleInput sniffs events and process actions if needed
-	handleInput(Event)
+const (
+	left  formEvent = "left"
+	right formEvent = "right"
+	del   formEvent = "del"
+	enter formEvent = "enter"
+	space formEvent = " "
+)
+
+var formEventMap = map[string]formEvent{
+	"<Left>":      left,
+	"<Right>":     right,
+	"<Backspace>": del,
+	"<Enter>":     enter,
+	"<Space>":     space,
+}
+
+func (f formEvent) String() string {
+	return string(f)
+}
+
+type FormItem interface {
+	// handleInput forwards events to formItems
+	handleInput(formEvent)
 
 	// selectable indicates if the item should be selectable of if it should
 	// be skipped when navigating in the item list
@@ -27,28 +46,6 @@ type FormItem interface {
 
 	// string returns the stringified item
 	string() string
-
-	// // write writes the item where the cursor currently is
-	// write()
-
-	// // unpick tells the item that it is currently selected
-	// pick()
-
-	// // unpick tells the item that it is currently unselected
-	// unpick()
-
-	// // setCursorPosition asks the item to set the cursor position on the x axis
-	// setCursorPosition()
-
-	// // displayChildren assert that, given the current item properties status, its
-	// // children can be display
-	// displayChildren() bool
-
-	// // setPrefix sets the item text prefix if relevant
-	// setPrefix(string)
-
-	// // clearValue reset the value to it's default state
-	// clearValue()
 }
 
 // FormNode is a form node.
@@ -70,16 +67,16 @@ func (self *FormNode) parseStyles(style Style) []Cell {
 
 	sb.WriteString(strings.Repeat(formIndent, self.level))
 
-	// if len(self.Nodes) == 0 {
-	// } else {
-	// 	// sb.WriteString(strings.Repeat(formIndent, self.level))
-	// 	// if self.Expanded {
-	// 	// 	sb.WriteRune(Theme.Form.Expanded)
-	// 	// } else {
-	// 	// 	sb.WriteRune(Theme.Form.Collapsed)
-	// 	// }
-	// 	// sb.WriteByte(' ')
-	// }
+	if len(self.Nodes) == 0 {
+	} else {
+		// sb.WriteString(strings.Repeat(formIndent, self.level))
+		if self.Expanded {
+			sb.WriteRune(Theme.Form.Expanded)
+		} else {
+			sb.WriteRune(Theme.Form.Collapsed)
+		}
+		sb.WriteByte(' ')
+	}
 	sb.WriteString(self.Item.string())
 	return ParseStyles(sb.String(), style)
 }
@@ -264,85 +261,26 @@ func (self *Form) ScrollDown() {
 	self.ScrollAmount(1)
 }
 
-// func (self *Form) ScrollPageUp() {
-// 	// If an item is selected below top row, then go to the top row.
-// 	if self.selectedRow > self.topRow {
-// 		self.selectedRow = self.topRow
-// 	} else {
-// 		self.ScrollAmount(-self.Inner.Dy())
-// 	}
-// }
-
-// func (self *Form) ScrollPageDown() {
-// 	self.ScrollAmount(self.Inner.Dy())
-// }
-
-// func (self *Form) ScrollHalfPageUp() {
-// 	self.ScrollAmount(-int(FloorFloat64(float64(self.Inner.Dy()) / 2)))
-// }
-
-// func (self *Form) ScrollHalfPageDown() {
-// 	self.ScrollAmount(int(FloorFloat64(float64(self.Inner.Dy()) / 2)))
-// }
-
-// func (self *Form) ScrollTop() {
-// 	self.selectedRow = 0
-// }
-
-// func (self *Form) ScrollBottom() {
-// 	self.selectedRow = len(self.rows) - 1
-// }
-
-// func (self *Form) Collapse() {
-// 	self.rows[self.selectedRow].Expanded = false
-// 	self.prepareNodes()
-// }
-
-// func (self *Form) Expand() {
-// 	node := self.rows[self.selectedRow]
-// 	if len(node.Nodes) > 0 {
-// 		self.rows[self.selectedRow].Expanded = true
-// 	}
-// 	self.prepareNodes()
-// }
-
 func (self *Form) ToggleExpand() {
 	node := self.rows[self.selectedRow]
-	node.Item.toggle()
 	if len(node.Nodes) > 0 {
 		node.Expanded = !node.Expanded
-		// for _, n := range node.Nodes {
-		// 	if !node.Expanded {
-		// 		n.initVisibilityMap()
-		// 	} else {
-		// 		n.Item.setVisible(true)
-		// 	}
-		// }
 	}
 	self.prepareNodes()
 }
 
-// func (node FormNode) initVisibilityMap() {
-// 	for _, n := range node.Nodes {
-// 		n.Item.setVisible(false)
-// 		n.initVisibilityMap()
-// 	}
-// }
+// HandleKeyboard handle special events that don't need to mapped by hand.
+func (self *Form) HandleKeyboard(e Event) {
+	if e.Type != KeyboardEvent {
+		return
+	}
 
-// func (self *Form) ExpandAll() {
-// 	self.Walk(func(n *FormNode) bool {
-// 		if len(n.Nodes) > 0 {
-// 			n.Expanded = true
-// 		}
-// 		return true
-// 	})
-// 	self.prepareNodes()
-// }
+	s := e.ID
+	node := self.rows[self.selectedRow]
+	if e, ok := formEventMap[s]; ok {
+		node.Item.handleInput(e)
+		return
+	}
 
-// func (self *Form) CollapseAll() {
-// 	self.Walk(func(n *FormNode) bool {
-// 		n.Expanded = false
-// 		return true
-// 	})
-// 	self.prepareNodes()
-// }
+	node.Item.handleInput(formEvent(s))
+}
