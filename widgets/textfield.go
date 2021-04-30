@@ -5,8 +5,8 @@ import (
 	"unicode/utf8"
 )
 
-// textField implements item interface
-type textField struct {
+// TextField implements item interface
+type TextField struct {
 	question          string
 	input             string
 	cursorPosition    int
@@ -14,11 +14,11 @@ type textField struct {
 	visible           bool
 }
 
-var _ FormItem = (*textField)(nil)
+var _ FormItem = (*TextField)(nil)
 
-// NewTextField creates a new instance of textField object
-func NewTextField(question string) *textField {
-	return &textField{
+// NewTextField creates a new instance of TextField object
+func NewTextField(question string) *TextField {
+	return &TextField{
 		question:          question,
 		input:             "",
 		minCursorPosition: 0,
@@ -26,15 +26,15 @@ func NewTextField(question string) *textField {
 	}
 }
 
-func (t *textField) setVisible(visible bool) {
+func (t *TextField) setVisible(visible bool) {
 	t.visible = visible
 }
 
-func (t *textField) string() string {
+func (t *TextField) string() string {
 	return fmt.Sprintf("%s %s", t.question, t.input)
 }
 
-func (t *textField) setCursorPosition() {
+func (t *TextField) setCursorPosition() {
 	if t.cursorPosition > utf8.RuneCountInString(t.input) {
 		t.cursorPosition = utf8.RuneCountInString(t.input)
 	}
@@ -43,7 +43,7 @@ func (t *textField) setCursorPosition() {
 	}
 }
 
-func (t *textField) handleInput(e formEvent) {
+func (t *TextField) handleInput(e formEvent) {
 	if e == right {
 		t.cursorPosition++
 		t.setCursorPosition()
@@ -77,8 +77,8 @@ func (t *textField) handleInput(e formEvent) {
 	t.setCursorPosition()
 }
 
-func (t *textField) selectable() bool { return true }
+func (t *TextField) selectable() bool { return true }
 
-func (t *textField) Answer() string {
+func (t *TextField) Answer() string {
 	return t.input
 }

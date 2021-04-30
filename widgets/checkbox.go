@@ -9,26 +9,26 @@ const (
 	checkbox_check   string = "☑"
 )
 
-// checkbox implements item interface
-type checkbox struct {
+// Checkbox implements item interface
+type Checkbox struct {
 	question string
 	prefix   string
 	checked  bool
 	visible  bool
 }
 
-var _ FormItem = (*checkbox)(nil)
+var _ FormItem = (*Checkbox)(nil)
 
-// NewCheckbox creates a new instance of checkbox object
-func NewCheckbox(question string, checked bool) *checkbox {
-	return &checkbox{
+// NewCheckbox creates a new instance of Checkbox object
+func NewCheckbox(question string, checked bool) *Checkbox {
+	return &Checkbox{
 		prefix:   "",
 		question: question,
 		checked:  checked,
 	}
 }
 
-func (c *checkbox) string() string {
+func (c *Checkbox) string() string {
 	var sb strings.Builder
 	sb.WriteString(c.prefix)
 	if c.checked {
@@ -41,18 +41,18 @@ func (c *checkbox) string() string {
 	return sb.String()
 }
 
-func (c *checkbox) handleInput(e formEvent) {
+func (c *Checkbox) handleInput(e formEvent) {
 	if e == enter {
 		c.checked = !c.checked
 	}
 }
 
-func (c *checkbox) setVisible(visible bool) {
+func (c *Checkbox) setVisible(visible bool) {
 	c.visible = visible
 }
 
-func (c *checkbox) selectable() bool { return true }
+func (c *Checkbox) selectable() bool { return true }
 
-func (c *checkbox) Answer() bool {
+func (c *Checkbox) Answer() bool {
 	return c.checked && c.visible
 }

@@ -1,25 +1,25 @@
 package widgets
 
-// label implements item interface
-type label struct {
+// Label implements item interface
+type Label struct {
 	s string
 }
 
-var _ FormItem = (*label)(nil)
+var _ FormItem = (*Label)(nil)
 
-// NewLabel creates a new instance of label object
-func NewLabel(s string) *label {
-	return &label{
+// NewLabel creates a new instance of Label object
+func NewLabel(s string) *Label {
+	return &Label{
 		s: s,
 	}
 }
 
-func (l *label) string() string {
+func (l *Label) string() string {
 	return l.s
 }
 
-func (l *label) handleInput(e formEvent) {}
+func (l *Label) handleInput(e formEvent) {}
 
-func (l *label) selectable() bool { return false }
+func (l *Label) selectable() bool { return false }
 
-func (l *label) setVisible(v bool) {}
+func (l *Label) setVisible(v bool) {}
