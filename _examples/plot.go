@@ -10,8 +10,8 @@ import (
 	"log"
 	"math"
 
-	ui "github.com/gizak/termui/v3"
-	"github.com/gizak/termui/v3/widgets"
+	ui "github.com/jcalmat/termui/v3"
+	"github.com/jcalmat/termui/v3/widgets"
 )
 
 func main() {
