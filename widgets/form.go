@@ -2,7 +2,6 @@ package widgets
 
 import (
 	"image"
-	"strconv"
 	"strings"
 
 	. "github.com/gizak/termui/v3"
@@ -177,11 +176,9 @@ func (self *Form) Draw(buf *Buffer) {
 	self.Block.Draw(buf)
 	point := self.Inner.Min
 
-	rowrunes := []rune(strconv.Itoa(self.selectedRow))
-	buf.SetCell(
-		NewCell(rowrunes[0], NewStyle(ColorWhite)),
-		image.Pt(self.Inner.Max.X-1, self.Inner.Min.Y),
-	)
+	if !self.rows[self.selectedRow].Item.selectable() {
+		self.ScrollAmount(1)
+	}
 
 	// adjusts view into widget
 	if self.selectedRow >= self.Inner.Dy()+self.topRow {
@@ -234,9 +231,9 @@ func (self *Form) Draw(buf *Buffer) {
 func (self *Form) ScrollAmount(amount int) {
 	for {
 		if len(self.rows)-int(self.selectedRow) <= amount {
-			self.selectedRow = len(self.rows) - 1
-		} else if int(self.selectedRow)+amount < 0 {
 			self.selectedRow = 0
+		} else if int(self.selectedRow)+amount < 0 {
+			self.selectedRow = len(self.rows) - 1
 		} else {
 			self.selectedRow += amount
 		}

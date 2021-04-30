@@ -26,7 +26,11 @@ func main() {
 	checkbox02 := widgets.NewCheckbox("checkbox.0.2", false)
 	textfield1 := widgets.NewTextField("textfield.1:")
 	checkbox11 := widgets.NewCheckbox("checkbox.1.1", false)
+	label0 := widgets.NewLabel("label0")
 	nodes := []*widgets.FormNode{
+		{
+			Item: label0,
+		},
 		{
 			Item: checkbox0,
 			Nodes: []*widgets.FormNode{
@@ -35,6 +39,9 @@ func main() {
 					Nodes: []*widgets.FormNode{
 						{
 							Item: checkbox02,
+						},
+						{
+							Item: label0,
 						},
 					},
 				},
@@ -47,6 +54,9 @@ func main() {
 					Item: checkbox11,
 				},
 			},
+		},
+		{
+			Item: label0,
 		},
 	}
 
