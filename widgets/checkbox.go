@@ -12,7 +12,6 @@ const (
 // Checkbox implements item interface
 type Checkbox struct {
 	question string
-	prefix   string
 	checked  bool
 	visible  bool
 }
@@ -22,7 +21,6 @@ var _ FormItem = (*Checkbox)(nil)
 // NewCheckbox creates a new instance of Checkbox object
 func NewCheckbox(question string, checked bool) *Checkbox {
 	return &Checkbox{
-		prefix:   "",
 		question: question,
 		checked:  checked,
 	}
@@ -30,7 +28,6 @@ func NewCheckbox(question string, checked bool) *Checkbox {
 
 func (c *Checkbox) string() string {
 	var sb strings.Builder
-	sb.WriteString(c.prefix)
 	if c.checked {
 		sb.WriteString(checkbox_check)
 	} else {
